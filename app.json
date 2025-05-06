@@ -23,6 +23,12 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
+    "androidStatusBar": {
+      "barStyle": "dark-content",
+      "backgroundColor": "#f3f4f6",
+      "hidden": false,
+      "translucent": false
+    },
     "plugins": [
       "expo-router",
       [

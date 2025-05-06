@@ -87,7 +87,9 @@ export default function DeckDetailScreen() {
   return (
     <View className="flex-1 bg-gray-100">
       <View className="p-4">
-        <Text className="text-2xl font-bold text-blue">{deck.name}</Text>
+        <Text className="text-2xl font-bold text-blue-500 mb-2">
+          {deck.name}
+        </Text>
         <Text className="text-gray-500 mb-5">{deck.description}</Text>
         <View className="flex-row justify-between">
           <Pressable
@@ -104,7 +106,7 @@ export default function DeckDetailScreen() {
             </Text>
           </Pressable>
           <Pressable
-            className="bg-blue-500 p-3 rounded-lg mb-4 flex-1"
+            className="bg-green-500 p-3 rounded-lg mb-4 flex-1"
             onPress={() => router.push(`/(deck)/(quiz)/${id}`)}
           >
             <Text className="text-white text-center font-bold">Take Quiz</Text>

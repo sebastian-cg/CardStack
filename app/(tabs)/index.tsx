@@ -44,9 +44,6 @@ export default function HomeScreen() {
 
   return (
     <View className="flex-1 bg-gray-100">
-      <Text className="text-2xl font-bold text-blue-500 shadow p-4">
-        CardStack 📇
-      </Text>
       <FlatList
         data={deckList}
         keyExtractor={(item) => item.id}

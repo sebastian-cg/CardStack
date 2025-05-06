@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import { FlatList, Text, View } from "react-native";
 import { decks } from "../data";
 
@@ -11,7 +12,7 @@ type QuizStats = {
 };
 
 type StreakData = {
-  lastActivityDate: string;
+  lastActivityDate: string; // ISO date string (e.g., "2025-05-06")
   streak: number;
 };
 
@@ -25,50 +26,56 @@ export default function StatsScreen() {
     streak: 0,
   });
 
-  useEffect(() => {
-    const loadStats = async () => {
-      const loadedQuizStats: { [deckId: string]: QuizStats } = {};
-      const loadedStreaks: { [deckId: string]: StreakData } = {};
+  // Reload stats and streaks whenever the screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      const loadStats = async () => {
+        const loadedQuizStats: { [deckId: string]: QuizStats } = {};
+        const loadedStreaks: { [deckId: string]: StreakData } = {};
 
-      for (const deck of decks) {
-        const storedQuizStats = await AsyncStorage.getItem(
-          `quizStats_${deck.id}`
-        );
-        if (storedQuizStats) {
-          loadedQuizStats[deck.id] = JSON.parse(storedQuizStats);
-        } else {
-          loadedQuizStats[deck.id] = {
-            attempts: 0,
-            totalCorrect: 0,
-            totalQuestions: 0,
-            cardStats: {},
-          };
+        // Load per-deck quiz stats and streaks
+        for (const deck of decks) {
+          const storedQuizStats = await AsyncStorage.getItem(
+            `quizStats_${deck.id}`
+          );
+          if (storedQuizStats) {
+            loadedQuizStats[deck.id] = JSON.parse(storedQuizStats);
+          } else {
+            loadedQuizStats[deck.id] = {
+              attempts: 0,
+              totalCorrect: 0,
+              totalQuestions: 0,
+              cardStats: {},
+            };
+          }
+
+          const storedStreak = await AsyncStorage.getItem(`streak_${deck.id}`);
+          if (storedStreak) {
+            loadedStreaks[deck.id] = JSON.parse(storedStreak);
+          } else {
+            loadedStreaks[deck.id] = {
+              lastActivityDate: "",
+              streak: 0,
+            };
+          }
         }
 
-        const storedStreak = await AsyncStorage.getItem(`streak_${deck.id}`);
-        if (storedStreak) {
-          loadedStreaks[deck.id] = JSON.parse(storedStreak);
-        } else {
-          loadedStreaks[deck.id] = {
-            lastActivityDate: "",
-            streak: 0,
-          };
-        }
-      }
+        // Load global streak
+        const storedGlobalStreak = await AsyncStorage.getItem("globalStreak");
+        const globalStreakData = storedGlobalStreak
+          ? JSON.parse(storedGlobalStreak)
+          : { lastActivityDate: "", streak: 0 };
 
-      const storedGlobalStreak = await AsyncStorage.getItem("globalStreak");
-      const globalStreakData = storedGlobalStreak
-        ? JSON.parse(storedGlobalStreak)
-        : { lastActivityDate: "", streak: 0 };
+        setQuizStats(loadedQuizStats);
+        setStreaks(loadedStreaks);
+        setGlobalStreak(globalStreakData);
+      };
 
-      setQuizStats(loadedQuizStats);
-      setStreaks(loadedStreaks);
-      setGlobalStreak(globalStreakData);
-    };
+      loadStats();
+    }, [])
+  );
 
-    loadStats();
-  }, []);
-
+  // Summarize quiz stats across all decks
   const totalStats = Object.values(quizStats).reduce(
     (acc, stats) => ({
       attempts: acc.attempts + stats.attempts,
@@ -80,14 +87,13 @@ export default function StatsScreen() {
 
   return (
     <View className="flex-1 bg-gray-100 p-4">
-      <Text className="text-2xl font-bold text-blue-500 mb-4">Statistics</Text>
       <View className="bg-white p-4 rounded-lg shadow mb-4">
         <Text className="text-lg font-bold text-green-500 mb-2">
           Overall Stats
         </Text>
         <Text className="text-black mb-1">
           Global Streak: {globalStreak.streak} day
-          {globalStreak.streak !== 1 ? "s" : ""}🔥
+          {globalStreak.streak !== 1 ? "s" : ""} 🔥
         </Text>
         <Text className="text-black mb-1">
           Total Quiz Attempts: {totalStats.attempts}

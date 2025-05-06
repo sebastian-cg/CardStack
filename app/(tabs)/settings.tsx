@@ -65,7 +65,6 @@ export default function SettingsScreen() {
 
   return (
     <View className="flex-1 bg-gray-100 p-4">
-      <Text className="text-2xl font-bold text-blue-500 mb-4">Settings</Text>
       <View className="bg-white p-4 rounded-lg shadow mb-4">
         <Text className="text-lg font-bold text-black mb-2">
           App Information
