@@ -33,18 +33,18 @@ export default function EditCardScreen() {
 
   return (
     <View className="flex-1 bg-gray-100 p-4">
-      <Text className="text-2xl font-bold text-black mb-4">
+      <Text className="text-2xl font-bold text-blue-500 mb-4">
         {isEdit ? "Edit Card" : "Add New Card"}
       </Text>
       <TextInput
-        className="bg-white p-3 rounded-lg mb-4 text-black"
-        placeholder="Front"
+        className="bg-white p-3 rounded-lg mb-4 text-gray-500"
+        placeholder="Put question here.."
         value={front}
         onChangeText={setFront}
       />
       <TextInput
-        className="bg-white p-3 rounded-lg mb-4 text-black"
-        placeholder="Back"
+        className="bg-white p-3 rounded-lg mb-4 text-gray-500"
+        placeholder="What is the answer?"
         value={back}
         onChangeText={setBack}
         multiline
